@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="{% static 'logo.png' %}">
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- INCLUDE CSS -->
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" type="text/css" rel="stylesheet">
+    <style>
+        /* Добавляем темную полосу под заголовком таблицы */
+        .table thead {
+            border-bottom: 2px solid #212529; /* Цвет и толщина полосы */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% include 'header.html' %}
+        <div class="row">
+            <div class="col-10">
+                {% block content %}
+
+                {% endblock %}
+                <div class="position-relative start-40"> {% include 'pagination.html' %} </div>
+            </div>
+            <div class="col-2">
+                {% block content_2 %}
+
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'bootstrap/js/bootstrap.min.js' %}" ></script>
+{% block extra_scripts %}
+{% endblock %}
+</body>
+</html>

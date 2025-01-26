@@ -1,0 +1,53 @@
+{% extends 'main.html' %}
+
+{% block content %}
+    <!-- Сообщения -->
+    {% if messages %}
+        <div class="mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="row">
+        {% for dish in dishes %}
+            <div class="col-md-4 d-flex align-items-stretch mb-3">
+                <div class="card">
+                    <img src="{{ dish.image.url }}" class="card-img-top img-fluid" alt="{{ dish.image.url }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ dish.name }}</h5>
+                        <p class="card-text">{{ dish.description }}</p>
+                        <p class="card-text"><small class="text-muted">Price: {{ dish.price }} руб.</small></p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}
+{% block content_2 %}
+<div class="d-flex justify-content-center">
+    <div class="d-flex flex-column align-items-center gap-3">
+        <a href="{% url 'dishes_create' %}" class="btn btn-lg btn-primary text-center">
+            Create new <br> Dish
+        </a>
+        <a href="{% url 'dish_delete_something' %}" class="btn btn-danger text-center">
+            Delete multiple dishes
+        </a>
+    </div>
+</div>
+
+
+    <p></p>
+    <div class="d-grid gap-2">
+        <a href="#"
+            class="btn btn-secondary">Load from file as an idea. Don't work</a>
+    </div>
+    <p></p>
+    <div class="d-grid gap-2">
+        <a href="{% url 'directory_list' %}"
+            class="btn btn-dark">Came back to <br>Main Directory</a>
+    </div>
+{% endblock %}

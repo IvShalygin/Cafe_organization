@@ -1,0 +1,43 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+    <!-- Сообщения -->
+    {% if messages %}
+        <div class="mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="d-flex flex-wrap">
+        <div class="card flex-fill m-2" style="max-width: 45%;">
+            <img src="{% static 'Img_orders.png' %}" class="card-img-top" alt="Img_orders.png">
+            <div class="card-body">
+                <p class="card-text text-center fw-bold">Оформить заказ</p>
+            </div>
+        </div>
+        <div class="card flex-fill m-2" style="max-width: 45%;">
+            <a href="{% url 'dishes' %}">
+                <img src="{% static 'Img_menu.png' %}" class="card-img-top" alt="Img_menu.png">
+                <div class="card-body">
+                    <p class="card-text text-center fw-bold">Наше МЕНЮ</p>
+                </div>
+            </a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content_2 %}
+    <div class="card m-2">
+        <div class="card-body">
+            <p class="card-text text-center fw-bold">Тут место под что-нибудь полезное, мб чат чб еще что-то</p>
+            <p class="card-text text-center fw-bold">Но пока ничего нет</p>
+            <p class="card-text text-center fw-bold">И можно было бы убрать, но почему то не хочется</p>
+        </div>
+    </div>
+
+{% endblock %}

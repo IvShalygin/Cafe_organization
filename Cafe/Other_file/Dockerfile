@@ -1,0 +1,1 @@
+docker run --rm --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5400:5432 -v vol_1:/var/lib/postgresql/data postgres

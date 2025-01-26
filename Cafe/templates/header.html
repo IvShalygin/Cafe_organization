@@ -1,0 +1,53 @@
+<header>
+    <div class="px-3 mb-2 text-bg-dark">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-between">
+                <!-- Левая частка: навігацыя -->
+                <ul class="nav fs-5 pb-4 justify-content-center align-items-center">
+                    <li>
+                        <a href="{% url 'home' %}" class="nav-link text-secondary">
+                            <svg class="bi d-block mx-auto mb-1" width="16" height="16">
+                                <use xlink:href="home/"></use>
+                            </svg>
+                            Home
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link text-white">
+                            <svg class="bi d-block mx-auto mb-1" width="16" height="16">
+                                <use xlink:href="#table"></use>
+                            </svg>
+                            Orders
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'dishes' %}" class="nav-link text-white">
+                            <svg class="bi d-block mx-auto mb-1" width="16" height="16">
+                                <use xlink:href="#grid"></use>
+                            </svg>
+                            Products
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Правая частка: блок з юзерам -->
+                <div class="d-flex align-items-center">
+                    <form class="col-12 col-lg-auto mb-2 me-1 mb-lg-0" role="search" style="max-width: 300px;">
+                        <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
+                    </form>
+                    {% if request.user.is_authenticated %}
+                        <div class="badge bg-secondary text-wrap d-flex align-items-center justify-content-center fs-6 me-2" style="width: 8rem; height: 2.5rem;">
+                            Hi, {{ request.user }}
+                        </div>
+                        <form method="post" action="{% url 'page_logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary" style="width: 8rem; height: 2.5rem;">Log out</button>
+                        </form>
+                    {% else %}
+                        <button type="button" class="btn btn-light text-dark" style="width: 8rem; height: 2.5rem;">Login</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
