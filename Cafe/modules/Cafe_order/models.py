@@ -4,12 +4,28 @@ from django.core.validators import FileExtensionValidator
 
 User = get_user_model()
 
+class CatedoryDish(models.Model):
+    """
+    Модель для категорий блюд.
+    """
+    name = models.CharField(max_length=100, verbose_name="Название категории")
+
+    class Meta:
+        verbose_name = "Категория блюда"
+        verbose_name_plural = "Категории блюд"
+
+    def __str__(self):
+        return self.name
+
 class Dish(models.Model):
     """
     Модель для блюд.
     """
     name = models.CharField(max_length=100, verbose_name="Имя блюда")
     description = models.TextField(verbose_name="Описание блюда")
+    category = models.ForeignKey(
+        to=CatedoryDish, verbose_name="Категория блюда", on_delete=models.SET_NULL, null=True
+    )
     price = models.DecimalField(max_digits=7, decimal_places=2, verbose_name="Цена")
     image = models.ImageField(
         verbose_name="Картинка",

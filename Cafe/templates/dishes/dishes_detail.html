@@ -1,0 +1,45 @@
+{% extends 'main.html' %}
+{% load custom_tags %}
+
+{% block content %}
+
+    <div class="card text-white bg-primary mb-3">
+        <div class="card-header fst-italic">
+            {{ dish.name }}
+        </div>
+        <ul class="list-group list-group-flush">
+
+        <!--        <li class="list-group-item">{{ region.name_region }}</li>-->
+            <li class="list-group-item list-group-item-action">
+                <div class="row">
+                    <div class="col-4 fw-bold"> Наименование блюда</div>
+                    <div class="col fw-bold"> {{ dish.name }}</div>
+                </div>
+            </li>
+            <li class="list-group-item list-group-item-action">
+                 <div class="row">
+                    <div class="col-4"> Name who updated</div>
+                    <div class="col"> {{ dish.updater }}</div>
+                </div>
+            </li>
+            <li class="list-group-item list-group-item-action">
+                 <div class="row">
+                    <div class="col-4"> Time update </div>
+                    <div class="col"> {{ dish.time_update|format_localtime}}</div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+{% endblock %}
+
+{% block content_2 %}
+    <div class="d-grid gap-2 d-md-block mt-2">
+<!--        <button type="submit" class="btn btn-lg btn-primary">Edit region</button>-->
+        <a href="{% url 'region_update' region.id %}"
+           class="btn btn-lg btn-primary">Edit / Update <br> Region</a>
+        <a href="{% url 'region_list' %}" class="btn btn-dark">Come back</a>
+        <a href="{% url 'delete_region' region.id %}" class="btn btn-danger">Delete this region</a>
+
+    </div>
+{% endblock %}
