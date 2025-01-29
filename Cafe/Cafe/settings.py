@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'modules.Cafe_order.apps.CafeOrderConfig',
+    'modules.Cafe_order.templatetags',
 ]
 
 MIDDLEWARE = [

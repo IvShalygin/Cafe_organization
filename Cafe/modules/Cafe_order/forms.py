@@ -1,0 +1,81 @@
+import re
+
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+from django import forms
+from .models import *
+
+class DishCreateForm(forms.ModelForm):
+    """
+    Форма добавления блюда на сайте
+    """
+
+    class Meta:
+        model = Dish
+        fields = ('name', 'category', 'price', 'description', 'image')
+
+    def __init__(self, *args, **kwargs):
+        """
+        Обновление стилей формы под Bootstrap
+        """
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({
+                'class': 'form-control',
+                'autocomplete': 'off'
+            })
+
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+
+        # Рэгулярны выраз: першая літара вялікая, затым могуць быць літары, лічбы, _ або -
+        if not re.match(r'^[А-ЯA-Z][а-яa-zА-ЯA-Z]*(\s[а-яa-zА-ЯA-Z,]+){0,6}$', name):
+            raise ValidationError(
+                "Назва блюда павінна быць некалька слоў, павінна пачынацца з вялікай літары і ўтрымліваць "
+                "толькі літары (кірыліцы ці лацініцы).")
+
+        return name
+
+
+
+class DishUpdateForm(DishCreateForm):
+    """
+    Форма обновления региона на сайте
+    """
+
+    class Meta:
+        model = Dish
+        fields = DishCreateForm.Meta.fields + ('updater',)
+
+    def __init__(self, *args, **kwargs):
+        """
+        Обновление стилей формы под Bootstrap
+        """
+        super().__init__(*args, **kwargs)
+        self.fields['updater'].widget.attrs['disabled'] = 'disabled'
+        self.fields['updater'].widget = forms.HiddenInput()
+
+        # Получить текущего пользователя
+        current_user = self.instance.updater
+
+        self.fields['updater'].widget.attrs.update({
+            'class': 'form-check-input',
+            # 'value': current_user.username if current_user else ''
+            'value': current_user
+        })
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if not instance.pk:  # Если объект еще не сохранен в базе данных (т.е. это создание нового объекта)
+            instance.time_update = timezone.now()  # Устанавливаем время создания на текущее время
+            if instance.updater is None:  # Если автор не указан
+                instance.updater = User.objects.get(username='username')  # Устанавливаем автора
+        if commit:
+            instance.save()
+        return instance
+
+    def clean_updater(self):
+        updater = self.cleaned_data.get('updater')
+        if not updater:
+            raise ValidationError("Выберыце карэктнага карыстальніка для абнаўлення.")
+        return updater

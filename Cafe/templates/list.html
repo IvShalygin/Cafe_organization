@@ -15,10 +15,12 @@
 
     <div class="d-flex flex-wrap">
         <div class="card flex-fill m-2" style="max-width: 45%;">
-            <img src="{% static 'Img_orders.png' %}" class="card-img-top" alt="Img_orders.png">
-            <div class="card-body">
-                <p class="card-text text-center fw-bold">Оформить заказ</p>
-            </div>
+            <a href="{% url 'orders_list' %}">
+                <img src="{% static 'Img_orders.png' %}" class="card-img-top" alt="Img_orders.png">
+                <div class="card-body">
+                    <p class="card-text text-center fw-bold">Оформить заказ</p>
+                </div>
+            </a>
         </div>
         <div class="card flex-fill m-2" style="max-width: 45%;">
             <a href="{% url 'dishes' %}">

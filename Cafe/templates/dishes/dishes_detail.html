@@ -2,44 +2,53 @@
 {% load custom_tags %}
 
 {% block content %}
-
-    <div class="card text-white bg-primary mb-3">
-        <div class="card-header fst-italic">
-            {{ dish.name }}
+    <!-- Сообщения -->
+    {% if messages %}
+        <div class="mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
         </div>
-        <ul class="list-group list-group-flush">
+    {% endif %}
 
-        <!--        <li class="list-group-item">{{ region.name_region }}</li>-->
-            <li class="list-group-item list-group-item-action">
-                <div class="row">
-                    <div class="col-4 fw-bold"> Наименование блюда</div>
-                    <div class="col fw-bold"> {{ dish.name }}</div>
+<div class="card border-0">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <figure>
+                        <img src="{{ dish.image.url }}" class="img-fluid rounded-0" alt="{{ image }}">
+                    </figure>
                 </div>
-            </li>
-            <li class="list-group-item list-group-item-action">
-                 <div class="row">
-                    <div class="col-4"> Name who updated</div>
-                    <div class="col"> {{ dish.updater }}</div>
+                <div class="col-md-9">
+                     <h5 class="card-title fw-bold fs-4">
+                        {{ dish.name }}
+                    </h5>
+                    <div class="card-text fs-5">
+                        <ul>
+                            <li>Наименование блюда: {{ dish.name }}</li>
+                            <li>Описание: {{ dish.description}}</li>
+                            <li>Категория: {{ dish.category }}</li>
+                            <li>Стоимость: {{ dish.price }}</li>
+                            <li>Кто обновил: {{ dish.updater }}</li>
+                            <li>Время обновления: {{ dish.time_update|format_localtime }}</li>
+                        </ul>
+                    </div>
                 </div>
-            </li>
-            <li class="list-group-item list-group-item-action">
-                 <div class="row">
-                    <div class="col-4"> Time update </div>
-                    <div class="col"> {{ dish.time_update|format_localtime}}</div>
-                </div>
-            </li>
-        </ul>
+            </div>
+        </div>
     </div>
 
 {% endblock %}
 
 {% block content_2 %}
-    <div class="d-grid gap-2 d-md-block mt-2">
+    <div class="d-grid gap-2">
 <!--        <button type="submit" class="btn btn-lg btn-primary">Edit region</button>-->
-        <a href="{% url 'region_update' region.id %}"
-           class="btn btn-lg btn-primary">Edit / Update <br> Region</a>
-        <a href="{% url 'region_list' %}" class="btn btn-dark">Come back</a>
-        <a href="{% url 'delete_region' region.id %}" class="btn btn-danger">Delete this region</a>
+        <a href="{% url 'dishes_update' dish.id %}"
+           class="btn btn-lg btn-primary ">Edit / Update  Dish</a> <br>
+        <a href="{% url 'dishes' %}" class="btn btn-dark">Come back</a> <br>
+        <a href="{% url 'delete_dishes' dish.id %}" class="btn btn-danger">Delete this dish</a>
 
     </div>
 {% endblock %}
