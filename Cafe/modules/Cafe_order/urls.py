@@ -4,7 +4,7 @@ from .views import HomeView, UserAppLogout  # from .views import UserAppLogout, 
 
 from modules.Cafe_order.Views.views_dishes import (DishesList, DishesCreate, DishesDetail, DishesUpdate, DishesDelete,
                                                    DishessBulkDelete)
-from modules.Cafe_order.Views.views_orders import OrdersList
+from modules.Cafe_order.Views.views_orders import OrdersList, OrderCreateView, OrderDetailView, OrdersListAll
 
 urlpatterns = [
     # dishes
@@ -18,6 +18,9 @@ urlpatterns = [
 
     # orders
     path('orders/', OrdersList.as_view(), name='orders_list'),
+    path('orders_all/', OrdersListAll.as_view(), name='orders_list_all'),
+    path("order/create/", OrderCreateView.as_view(), name="order_create"),
+    path("order/<int:pk>/", OrderDetailView.as_view(), name="order_detail"),
 
     # home
     path('home/', HomeView.as_view(), name='home'),

@@ -1,8 +1,9 @@
 import re
-
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django import forms
+from django.forms import inlineformset_factory
+
 from .models import *
 
 class DishCreateForm(forms.ModelForm):
@@ -79,3 +80,34 @@ class DishUpdateForm(DishCreateForm):
         if not updater:
             raise ValidationError("Выберыце карэктнага карыстальніка для абнаўлення.")
         return updater
+
+
+class OrderCreateForm(forms.ModelForm):
+    """
+    Форма для стварэння заказу
+    """
+    class Meta:
+        model = Order
+        fields = ["table_number", "status"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        available_tables = Table.objects.filter(is_occupied=False)
+
+        if available_tables.exists():
+            self.fields["table_number"].queryset = available_tables
+        else:
+            self.fields["table_number"].widget = forms.HiddenInput()  # Схаваць поле
+            self.fields["table_number"].required = False  # Зрабіць поле неабавязковым
+            self.no_tables_available = True  # Сцяг для шаблона
+
+class OrderItemForm(forms.ModelForm):
+    """
+    Форма для дадавання страў у заказ
+    """
+    class Meta:
+        model = OrderItem
+        fields = ["dish", "quantity"]
+
+
+OrderItemFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1, can_delete=False)

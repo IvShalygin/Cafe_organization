@@ -25,34 +25,44 @@
                         <th>Столік</th>
                         <th>Блюда</th>
                         <th>Колькасць</th>
+                        <th>Кошт</th>
                         <th>Статус</th>
                         <th>Час замовы</th>
-                        <th>Кошт</th>
+                        <th>Разам</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for order in orders %}
                         {% for item in order.order_items.all %}
-                            <tr>
+                            <tr {% if forloop.first %} class="order-separator"{% endif %}>
                                 {% if forloop.first %}
                                     <td rowspan="{{ order.order_items.count }}">{{ order.id }}</td>
                                     <td rowspan="{{ order.order_items.count }}">{{ order.table_number }}</td>
                                 {% endif %}
                                 <td>{{ item.dish.name }}</td>
                                 <td>{{ item.quantity }}</td>
+                                <td>{{ item.total_price }}</td> <!-- Кошт за радок -->
                                 {% if forloop.first %}
                                     <td rowspan="{{ order.order_items.count }}">{{ order.get_status_display }}</td>
-                                    <td rowspan="{{ order.order_items.count }}">{{ order.time_update }}</td>
                                     <td rowspan="{{ order.order_items.count }}">
-<!--                                        {{ order.order_items.all|sum_total_price  }}-->
-                                        {{ order.total_price  }}
+                                        <div>{{ order.updater }}</div>
+                                        <div>{{ order.time_update|date:"d.m.Y" }}</div>
+                                        <div>{{ order.time_update|time:"H:i" }}</div>
                                     </td>
+                                    <td rowspan="{{ order.order_items.count }}">{{ order.total_price }}</td>
                                 {% endif %}
                             </tr>
                         {% endfor %}
                     {% endfor %}
                 </tbody>
+
             </table>
+
+        <style>
+            .order-separator td {
+                border-top: 3px solid black !important;
+            }
+        </style>
         </div>
     {% else %}
         <p>No {{ custom_title|lower }} available.</p>
@@ -61,11 +71,14 @@
 {% block content_2 %}
     <div class="d-flex justify-content-center">
         <div class="d-grid gap-2">
-            <a href="{% url 'dishes_create' %}" class="btn btn-lg btn-primary text-center">
-                Create new Dish
+            <a href="{% url 'order_create' %}" class="btn btn-lg btn-primary text-center">
+                Create new Order
             </a>
-            <a href="{% url 'dish_delete_something' %}" class="btn btn-danger text-center">
-                Delete multiple dishes
+            <a href="{% url 'orders_list_all' %}" class="btn btn-lg btn-primary text-center">
+                View all Orders
+            </a>
+            <a href="#" class="btn btn-danger text-center">
+                Delete multiple Order
                 <br>Пока не работает
             </a>
         </div>

@@ -1,0 +1,57 @@
+{% extends 'main.html' %}
+{% block content %}
+    <div class="container">
+        <h2>Стварэнне заказу</h2>
+        {% if form.no_tables_available %}
+            <div class="alert alert-danger">
+                Усе столікі занятыя! Немагчыма зрабіць заказ.
+            </div>
+        {% else %}
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+
+                <h3>Дадайце стравы:</h3>
+                <div id="order-items-formset">
+                    {{ order_items.management_form }}
+                    {% for form in order_items %}
+                        <div class="order-item-form">
+                            {{ form.as_p }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <button type="button" id="add-item-btn" class="btn btn-secondary">Дадаць яшчэ страву</button>
+                <button type="submit" class="btn btn-primary">Стварыць заказ</button>
+            </form>
+        {% endif %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const addButton = document.getElementById("add-item-btn");
+        const totalForms = document.getElementById("id_order_items-TOTAL_FORMS");
+        const formContainer = document.getElementById("order-items-formset");
+
+        addButton.addEventListener("click", function(event) {
+            event.preventDefault();
+
+            // Получаем текущее количество форм
+            let currentFormCount = parseInt(totalForms.value);
+
+            // Клонируем первую форму (шаблон)
+            const newForm = formContainer.querySelector(".order-item-form").cloneNode(true);
+
+            // Обновляем индексы в новой форме
+            newForm.innerHTML = newForm.innerHTML.replace(/-\d+-/g, `-${currentFormCount}-`);
+            newForm.innerHTML = newForm.innerHTML.replace(/\[\d+\]/g, `[${currentFormCount}]`);
+
+            // Добавляем новую форму в контейнер
+            formContainer.appendChild(newForm);
+
+            // Увеличиваем счетчик форм
+            totalForms.value = currentFormCount + 1;
+        });
+    });
+</script>
+    </div>
+{% endblock %}
