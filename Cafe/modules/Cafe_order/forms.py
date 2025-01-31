@@ -110,4 +110,17 @@ class OrderItemForm(forms.ModelForm):
         fields = ["dish", "quantity"]
 
 
-OrderItemFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1, can_delete=False)
+OrderItemFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1, can_delete=True)
+
+class OrderUpdateForm(forms.ModelForm):
+    """
+    Форма для рэдагавання заказу
+    """
+    class Meta:
+        model = Order
+        fields = ["table_number", "status"]
+
+
+class OrderSearchForm(forms.Form):
+    table_number = forms.IntegerField(required=False, label="Номер стола")
+    status = forms.ChoiceField(choices=Order.STATUS_CHOICES, required=False, label="Статус заказа")

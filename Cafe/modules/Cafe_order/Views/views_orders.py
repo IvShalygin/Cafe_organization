@@ -3,15 +3,19 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.db import transaction
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse, reverse_lazy
+from django.views import View
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView
+from django.utils import timezone
+from django.db.models import Q
 
-from modules.Cafe_order.forms import DishUpdateForm, DishCreateForm, OrderCreateForm, OrderItemFormSet
+from modules.Cafe_order.forms import DishUpdateForm, DishCreateForm, OrderCreateForm, OrderItemFormSet, OrderUpdateForm, \
+    OrderSearchForm
 from modules.Cafe_order.models import Dish, OrderItem, Order
 
 
 class OrdersList(LoginRequiredMixin, ListView):
     """
-    View to list all orders
+    View to list all orders excluding orders with status 2 = "Оплачено"
     """
     model = Order
     login_url = '/login/'
@@ -121,3 +125,157 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
         """
         return get_object_or_404(Order, id=self.kwargs["pk"])
 
+
+class OrderUpdateView(LoginRequiredMixin, UpdateView):
+    """
+       View для рэдагавання заказу
+       """
+    model = Order
+    form_class = OrderUpdateForm
+    template_name = "orders/order_update.html"
+    success_url = reverse_lazy("orders_list")
+
+    def get_context_data(self, **kwargs):
+        """
+        Дадаем FormSet у кантэкст
+        """
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context["order_items"] = OrderItemFormSet(self.request.POST, instance=self.object)
+        else:
+            context["order_items"] = OrderItemFormSet(instance=self.object)
+        return context
+
+    def form_valid(self, form):
+        """
+        Захаванне заказу і звязаных элементаў
+        """
+        context = self.get_context_data()
+        order_items = context["order_items"]
+
+        with transaction.atomic():
+            form.instance.updater = self.request.user
+            self.object = form.save()
+
+            if order_items.is_valid():
+                order_items.instance = self.object
+                order_items.save()
+                self.object.calculate_total_price()  # Абнаўляем кошт заказу
+            else:
+                print(order_items.errors)  # Для адладкі
+                return self.form_invalid(form)
+
+        return super().form_valid(form)
+
+
+class OrderDeleteView(LoginRequiredMixin, DeleteView):
+    """
+    View для выдалення заказу
+    """
+    model = Order
+    success_url = reverse_lazy("orders_list")
+    template_name = "orders/order_delete.html"
+
+    def get_context_data(self, **kwargs):
+        """
+        Добавляем дополнительный контекст в шаблон.
+        """
+        context = super().get_context_data(**kwargs)
+        context["order"] = self.get_object()  # Передаем заказ в шаблон
+        return context
+
+    def get(self, request, *args, **kwargs):
+        print("Метод GET вызван")
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Переопределяем метод post, чтобы вызвать delete.
+        """
+        print("Метод POST вызван")
+        return self.delete(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Переопределяем метод delete для освобождения столика, если заказ активный.
+        """
+        try:
+            print("Метод DELETE вызван")
+            self.object = self.get_object()  # Получаем объект заказа
+
+            print(
+                f"Заказ #{self.object.id}: статус = {self.object.status}, столик = {self.object.table_number.number}, занят = {self.object.table_number.is_occupied}")
+
+            if self.object.status != 2 or self.object.status != 'Оплачено':  # 2 — это статус "Оплачено"
+                print(f"Заказ #{self.object.id} активный. Освобождаем столик #{self.object.table_number.number}.")
+                # Освобождаем столик
+                table = self.object.table_number
+                table.is_occupied = False
+                table.save()
+                print(f"Столик #{table.number} освобожден.")
+            else:
+                print(f"Заказ #{self.object.id} оплачен. Столик не освобождается при удалении заказа.")
+
+            # Удаляем заказ
+            response = super().delete(request, *args, **kwargs)
+            print(f"Заказ #{self.object.id} удален.")
+
+            return response
+        except Exception as e:
+            print(f"Ошибка при удалении заказа: {e}")
+            raise  # Повторно выбрасываем исключение
+
+
+class DailyRevenueView(View):
+    template_name = 'orders/daily_revenue.html'
+
+    def get(self, request, *args, **kwargs):
+        now = timezone.now()
+        start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+        orders = Order.objects.filter(time_update__gte=start_of_day, status=2)
+        total_revenue = sum(order.total_price for order in orders)
+
+        context = {
+            'orders': orders,
+            'total_revenue': total_revenue,
+            'start_of_day': start_of_day,
+            'now': now,
+        }
+        return render(request, self.template_name, context)
+
+
+class OrderSearchView(View):
+    template_name = 'orders/order_search.html'
+
+    def get(self, request, *args, **kwargs):
+        form = OrderSearchForm(request.GET)
+        orders = Order.objects.all()
+
+        query = request.GET.get('query')  # Получаем поисковый запрос из формы в хедере
+
+        if query:
+            # Фильтрация по номеру стола или статусу
+            orders = orders.filter(
+                Q(table_number__number__icontains=query) |  # Поиск по номеру стола
+                Q(status__icontains=query)  # Поиск по статусу
+            )
+
+        if form.is_valid():
+            table_number = form.cleaned_data.get('table_number')
+            status = form.cleaned_data.get('status')
+
+            # Фильтрация по номеру стола
+            if table_number:
+                orders = orders.filter(table_number__number=table_number)
+
+            # Фильтрация по статусу
+            if status:
+                orders = orders.filter(status=status)
+
+        context = {
+            'form': form,
+            'orders': orders,
+            'query': query,  # Передаем поисковый запрос в шаблон
+        }
+        return render(request, self.template_name, context)

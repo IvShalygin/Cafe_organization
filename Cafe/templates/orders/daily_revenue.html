@@ -1,0 +1,35 @@
+{% extends 'main.html' %}
+{% block content %}
+    <div class="container">
+        <h2>Выручка за текущие сутки</h2>
+        <p><strong>Начало суток:</strong> {{ start_of_day|date:"d.m.Y H:i" }}</p>
+        <p><strong>Текущее время:</strong> {{ now|date:"d.m.Y H:i" }}</p>
+        <p><strong>Общая выручка:</strong> {{ total_revenue }} руб.</p>
+
+        <h3>Список оплаченных заказов:</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Номер заказа</th>
+                    <th>Столик</th>
+                    <th>Общая стоимость</th>
+                    <th>Время заказа</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.table_number.number }}</td>
+                        <td>{{ order.total_price }} руб.</td>
+                        <td>{{ order.time_update|date:"d.m.Y H:i" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4">Нет оплаченных заказов за текущие сутки.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

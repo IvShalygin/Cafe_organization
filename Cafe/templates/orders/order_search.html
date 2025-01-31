@@ -1,0 +1,43 @@
+{% extends 'main.html' %}
+{% block content %}
+    <div class="container">
+        <h2>Поиск заказов</h2>
+        <form method="get" action="{% url 'order_search' %}">
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Искать</button>
+        </form>
+
+        {% if query %}
+            <h3>Результаты поиска для "{{ query }}":</h3>
+        {% else %}
+            <h3>Результаты поиска:</h3>
+        {% endif %}
+
+        {% if orders %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Номер заказа</th>
+                        <th>Столик</th>
+                        <th>Статус</th>
+                        <th>Общая стоимость</th>
+                        <th>Время заказа</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ order.id }}</td>
+                            <td>{{ order.table_number.number }}</td>
+                            <td>{{ order.get_status_display }}</td>
+                            <td>{{ order.total_price }} руб.</td>
+                            <td>{{ order.time_update|date:"d.m.Y H:i" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Заказы не найдены.</p>
+        {% endif %}
+    </div>
+{% endblock %}

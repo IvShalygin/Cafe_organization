@@ -1,20 +1,19 @@
 {% extends 'main.html' %}
 {% block content %}
     <div class="container">
-        <h2>Заказ №{{ order.id }}</h2>
-        <p><strong>Столік:</strong> {{ order.table_number }}</p>
-        <p><strong>Статус:</strong> {{ order.get_status_display }}</p>
-        <p><strong>Час замовы:</strong> {{ order.time_update|date:"d.m.Y H:i" }}</p>
-        <p><strong>Агульны кошт:</strong> {{ order.total_price }}</p>
+        <h2>Дэталі заказу #{{ order.id }}</h2>
+        <p><strong><i>Статус:</i> {{ order.get_status_display }}</strong></p>
+        <p><strong><i>Столик:</i> {{ order.table_number.number }}</strong></p>
+        <p><strong><i>Общая цена заказа:</i> {{ order.total_price }} руб.</strong></p>
 
-        <h3>Стравы ў заказе</h3>
+        <h3>Стравы ў заказе:</h3>
         <table class="table">
             <thead>
                 <tr>
-                    <th>Назва</th>
-                    <th>Колькасць</th>
-                    <th>Кошт за адзінку</th>
-                    <th>Кошт за радок</th>
+                    <th>Название блюда</th>
+                    <th>Количество</th>
+                    <th>Цена за единицу</th>
+                    <th>Общая цена блюда</th>
                 </tr>
             </thead>
             <tbody>
@@ -22,13 +21,23 @@
                     <tr>
                         <td>{{ item.dish.name }}</td>
                         <td>{{ item.quantity }}</td>
-                        <td>{{ item.dish.price }}</td>
-                        <td>{{ item.total_price }}</td>
+                        <td>{{ item.dish.price }} руб.</td>
+                        <td>{{ item.total_price }} руб.</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
 
-        <a href="{% url 'orders_list' %}" class="btn btn-secondary">Назад</a>
+        <a href="{% url 'orders_list' %}" class="btn btn-secondary">Назад да спісу заказаў</a>
+    </div>
+{% endblock %}
+{% block content_2 %}
+    <div class="d-grid gap-2">
+<!--        <button type="submit" class="btn btn-lg btn-primary">Edit region</button>-->
+        <a href="{% url 'order_update' order.id %}"
+           class="btn btn-lg btn-primary ">Edit / Update Order</a> <br>
+        <a href="{% url 'orders_list'  %}" class="btn btn-dark">Come back</a> <br>
+        <a href="{% url 'order_delete' order.id %}" class="btn btn-danger">Delete this order</a>
+
     </div>
 {% endblock %}
