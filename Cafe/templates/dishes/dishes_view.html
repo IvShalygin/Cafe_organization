@@ -1,10 +1,9 @@
 {% extends 'main.html' %}
 {% load static %}
 
-    {% block head_style %}
-    <!-- Подключение custom файла стилей -->
+{% block head_style %}
     <link rel="stylesheet" href="{% static 'dishes/styles/dishes.css' %}">
-    {% endblock %}
+{% endblock %}
 
 {% block content %}
     <!-- Сообщения -->
@@ -17,26 +16,31 @@
             {% endfor %}
         </div>
     {% endif %}
-    <div class="row">
-        {% for dish in dishes %}
-            <div class="col-md-4 d-flex align-items-stretch mb-3">
-                <div class="card">
-                    <a href="{% url 'dishes_detail' dish.id %}" class="list-group-item list-group-item-action">
-                        <div class="image-container">
-                            <img src="{{ dish.image.url }}" class="card-img-top img-fluid" alt="{{ dish.image.url }}">
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title">{{ dish.name }}</h5>
-                            <p class="card-text">{{ dish.description|slice:":50" }}{% if dish.description|length > 50 %}...{% endif %}</p>
-                            <p class="card-text"><small class="text-muted">Price: {{ dish.price }} руб.</small></p>
-                        </div>
-                    </a>
+
+    {% for category, dishes in dishes_by_category.items %}
+        <h2 class="mt-4">{{ category.name }}</h2>
+        <div class="row">
+            {% for dish in dishes %}
+                <div class="col-md-4 d-flex align-items-stretch mb-3">
+                    <div class="card">
+                        <a href="{% url 'dishes_detail' dish.id %}" class="list-group-item list-group-item-action">
+                            <div class="image-container">
+                                <img src="{{ dish.image.url }}" class="card-img-top img-fluid" alt="{{ dish.name }}">
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ dish.name }}</h5>
+                                <p class="card-text">{{ dish.description|slice:":50" }}{% if dish.description|length > 50 %}...{% endif %}</p>
+                                <p class="card-text"><small class="text-muted">Price: {{ dish.price }} руб.</small></p>
+                            </div>
+                        </a>
+                    </div>
                 </div>
-            </div>
-        {% endfor %}
-    </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
 
 {% endblock %}
+
 {% block content_2 %}
 <div class="d-flex justify-content-center">
     <div class="d-grid gap-2">
@@ -50,14 +54,12 @@
     </div>
 </div>
 
-    <p></p>
+<p></p>
 <div class="d-grid gap-2">
-        <a href="{% url 'directory_list' %}"
-            class="btn btn-dark">Came back</a>
-    </div>
-    <p></p>
-        <div class="d-grid gap-2">
-        <a href="#"
-            class="btn btn-secondary">Load from file as an idea. Don't work</a>
-    </div>
+    <a href="{% url 'directory_list' %}" class="btn btn-dark">Came back</a>
+</div>
+<p></p>
+<div class="d-grid gap-2">
+    <a href="#" class="btn btn-secondary">Load from file as an idea. Don't work</a>
+</div>
 {% endblock %}

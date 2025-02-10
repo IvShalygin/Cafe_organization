@@ -1,11 +1,18 @@
+from django.db import router
 from django.urls import path
+from rest_framework.routers import SimpleRouter
 
 from .views import HomeView, UserAppLogout  # from .views import UserAppLogout, HomeView
 
 from modules.Cafe_order.Views.views_dishes import (DishesList, DishesCreate, DishesDetail, DishesUpdate, DishesDelete,
-                                                   DishessBulkDelete)
+                                                   DishessBulkDelete, DishViewSet)
 from modules.Cafe_order.Views.views_orders import OrdersList, OrderCreateView, OrderDetailView, OrdersListAll, \
     OrderUpdateView, OrderDeleteView, DailyRevenueView, OrderSearchView
+
+
+router = SimpleRouter()
+
+router.register(r'dish_api_view', DishViewSet, basename='dish_api_view')
 
 urlpatterns = [
     # dishes
@@ -31,3 +38,5 @@ urlpatterns = [
     path('', HomeView.as_view(), name='directory_list'),
     path('page_logout/', UserAppLogout.as_view(), name='page_logout'),
 ]
+
+urlpatterns += router.urls

@@ -25,7 +25,7 @@ admin.site.register(OrderItem)
 @admin.register(CategoryDish)
 class CategoryDish(admin.ModelAdmin):
     list_display = ('name',)
-    search_fields = ('name',)
+    search_fields = ('id', 'name', )
 
 @admin.register(Table)
 class TableAdmin(admin.ModelAdmin):

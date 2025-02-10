@@ -7,6 +7,7 @@ from django.views import View
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView
 from django.utils import timezone
 from django.db.models import Q
+from rest_framework.viewsets import ModelViewSet
 
 from modules.Cafe_order.forms import DishUpdateForm, DishCreateForm, OrderCreateForm, OrderItemFormSet, OrderUpdateForm, \
     OrderSearchForm
@@ -279,3 +280,12 @@ class OrderSearchView(View):
             'query': query,  # Передаем поисковый запрос в шаблон
         }
         return render(request, self.template_name, context)
+
+
+class OrderSerializer:
+    pass
+
+
+class OrderViewSet(ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
